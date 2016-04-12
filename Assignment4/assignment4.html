@@ -1,0 +1,221 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+		<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+		<title> Assignment 4 </title>
+	</head>
+	<body>
+
+		<div data-role="page" id="grocery_mode" data-theme="b">
+		  <div data-role="header">
+		    <h1>Grocery Mode</h1>
+		    <div data-role="navbar">
+		      <ul>
+		        <li><a href="#" class="ui-btn-active ui-state-persist">Grocery</a></li>
+		        <li><a href="#list_mode">Build List</a></li>
+		        <li><a href="#shopping_mode">Shopping</a></li>
+		      </ul>
+		    </div>
+		  </div>
+
+		  <div data-role="main" class="ui-content">
+		  	<form method="post">
+		      <div class="ui-field-contain">
+		        <fieldset class="ui-field-contain">
+			        <label for="grocery">Grocery:</label>
+			        <input type="text" name="grocery" id="grocery_name">
+			       	<label for="price">Price:</label>
+			        <input type="text" name="price" id="grocery_price">
+		        	<label for="category">Category</label>
+			        <select name="category" id="grocery_category">
+			          <option value=""></option>
+			          <option value="mon">Monday</option>
+			          <option value="tue">Tuesday</option>
+			          <option value="wed">Wednesday</option>
+			          <option value="thu">Thursday</option>
+			          <option value="fri">Friday</option>
+			          <option value="sat">Saturday</option>
+			          <option value="sun">Sunday</option>
+			        </select>
+
+					    <a href="#new_category" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all ui-icon-plus ui-btn-icon-left">New Category</a>
+
+					    <div data-role="popup" id="new_category" class="ui-content" style="min-width:250px;">
+					      <form method="post">
+					        <div>
+					          <h3>New Category</h3>
+					          <label for="new_category_name" class="ui-hidden-accessible">Category:</label>
+					          <input type="text" name="new_category_name" id="new_category_name" placeholder="Category">
+					          <a href="#" data-rel="back" class="ui-btn ui-corner-all" id="create_new_category">Create</a>
+					        </div>
+					      </form>
+					    </div>
+
+		      	</fieldset>
+		      </div>
+		      <input type="submit" data-inline="true" id="submit_grocery" value="Submit">
+		    </form>
+		  </div>
+
+		  <div data-role="footer">
+		    <h4>&copy; 2016</h4>
+		  </div>
+		</div>
+
+		<div data-role="page" id="list_mode" data-theme="b">
+        	<div data-role="header">
+        		<button class="ui-btn" id="button_add">Add Item</button>
+            	<h1>List Mode</h1>
+            	<div data-role="navbar">
+			      <ul>
+			        <li><a href="#grocery_mode">Grocery</a></li>
+			        <li><a href="#" class="ui-btn-active ui-state-persist">Build List</a></li>
+			        <li><a href="#shopping_mode">Shopping</a></li>
+			      </ul>
+			    </div>
+	        </div>
+	        <div data-role="content">
+	        	<div id="div_add_item" style="display:none">
+					<h4>New Item</h4>
+					<input type="text" id="item_to_add">
+					<a href="" id="done">Done</a>
+	        	</div>
+
+	        	<div data-role="collapsible">
+	        		<h4>List</h4>
+		        	<ul data-role="listview" id="list">
+		                <li><a href="#">Food</a></li>
+		                <li><a href="#">Produce</a></li>
+		                <li><a href="#">Supplies</a></li>
+	           		</ul>
+	           	</div>
+	        </div>
+	        <div data-role="footer">
+	        	<h4>&copy; 2016</h4>
+        	</div>
+        </div>
+
+
+        <div data-role="page" id="shopping_mode" data-theme="b">
+        	<div data-role="header">
+            	<h1>Shopping Mode</h1>
+            	<div data-role="navbar">
+			      <ul>
+			        <li><a href="#grocery_mode">Grocery</a></li>
+			        <li><a href="#list_mode">Build List</a></li>
+			        <li><a href="#" class="ui-btn-active ui-state-persist">Shopping</a></li>
+			      </ul>
+			    </div>
+	        </div>
+	        <div data-role="content">
+	        	<div id="div_add_item" style="display:none">
+					<h4>New Item</h4>
+					<input type="text" id="item_to_add">
+					<a href="" id="done">Done</a>
+	        	</div>
+
+	        	<div data-role="collapsible">
+	        		<h4>List</h4>
+		        	<ul data-role="listview" id="list">
+		                <li><a href="#">Food</a></li>
+		                <li><a href="#">Produce</a></li>
+		                <li><a href="#">Supplies</a></li>
+	           		</ul>
+	           	</div>
+	        </div>
+	        <div data-role="footer">
+	        	<h4>&copy; 2016</h4>
+        	</div>
+        </div>
+
+
+	</body>
+
+
+	<script language = javascript type = "text/javascript">
+
+		// LISTS
+		var categories = new Array();
+		var groceries = new Array();
+		var lists = new Array();
+
+		// OBJECTS
+
+		function category(name){
+			this.name = name;
+
+			this.addToList = function(){
+				categories.push(JSON.stringify(this));
+			}
+		}
+
+		function grocery(name, price, category){
+			this.name = name;
+			this.price = price;
+			this.category = category;
+
+			this.addToList = function(){
+				groceries.push(JSON.stringify(this));
+			}
+		}
+
+		// FUNCTIONS
+
+		function save_groceries() {
+			localStorage.setItem("groceries", JSON.stringify(groceries));
+		}
+
+		function get_groceries() {
+			return JSON.parse(localStorage.getItem("groceries"));
+		}
+
+		function clear_grocery_fields() {
+			$("#grocery_name").val("");
+			$("#grocery_price").val("");
+			$("#grocery_category").val("");
+		}
+
+		// EVENTS
+
+		$("#create_new_category").tap(function () {
+			$("#category").append($("<option value='" + $("#new_category_name").val() + "'>" + $("#new_category_name").val() + "</option>"));
+			$("#new_category_name").val("");
+		});
+
+		$("#submit_grocery").tap(function () {
+			var gname = $("#grocery_name").val();
+			var gprice = $("#grocery_price").val();
+			var gcategory = $("#grocery_category").val();
+			var g = new grocery(gname, gprice, gcategory);
+			g.addToList();
+			save_groceries();
+			clear_grocery_fields();
+		});
+
+		// $("li").tap(function () {
+		// 	$(this).remove();
+		// });
+
+		// $("#button_add").tap(function (){
+		// 	$("#div_add_item").show();
+		// });
+
+		// $("#done").tap(function (){
+		// 	$("#div_add_item").hide();
+		// });
+
+		// $("#item_to_add").keypress(function (e) {
+		// 	var key = e.which;
+		// 	if(key == 13){
+		// 	    $('ul').first().append($("<li><a href='#'>" + $("#item_to_add").val() + "</a></li>"));
+		// 	    $("#item_to_add").val("");
+		// 	    $("#list").listview('refresh');
+		// 	}
+		// });
+
+
+
+	</script>
+</html>
