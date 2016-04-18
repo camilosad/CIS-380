@@ -29,33 +29,15 @@
 			       	<label for="price">Price:</label>
 			        <input type="text" name="price" id="grocery_price">
 		        	<label for="category">Category</label>
-			        <select name="category" id="grocery_category">
-			          <option value=""></option>
-			          <option value="mon">Monday</option>
-			          <option value="tue">Tuesday</option>
-			          <option value="wed">Wednesday</option>
-			          <option value="thu">Thursday</option>
-			          <option value="fri">Friday</option>
-			          <option value="sat">Saturday</option>
-			          <option value="sun">Sunday</option>
-			        </select>
-
-					    <a href="#new_category" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all ui-icon-plus ui-btn-icon-left">New Category</a>
-
-					    <div data-role="popup" id="new_category" class="ui-content" style="min-width:250px;">
-					      <form method="post">
-					        <div>
-					          <h3>New Category</h3>
-					          <label for="new_category_name" class="ui-hidden-accessible">Category:</label>
-					          <input type="text" name="new_category_name" id="new_category_name" placeholder="Category">
-					          <a href="#" data-rel="back" class="ui-btn ui-corner-all" id="create_new_category">Create</a>
-					        </div>
-					      </form>
-					    </div>
+			        <!-- <input list="grocery_category">
+							<datalist id="grocery_category">
+							  <option value="">
+							</datalist> -->
+							<input type="text" name="grocery_category" id="grocery_category">
 
 		      	</fieldset>
 		      </div>
-		      <input type="submit" data-inline="true" id="submit_grocery" value="Submit">
+		      <input type="submit" data-inline="true" id="submit_grocery" value="Create">
 		    </form>
 		  </div>
 
@@ -138,37 +120,36 @@
 
 		// LISTS
 		var categories = new Array();
-		var groceries = new Array();
 		var lists = new Array();
 
 		// OBJECTS
 
 		function category(name){
 			this.name = name;
+			this.groceries = new Array();
 
 			this.addToList = function(){
-				categories.push(JSON.stringify(this));
+				categories.push(this);
+			}
+
+			this.addItem = function(item) {
+				this.groceries.push(item);
 			}
 		}
 
 		function grocery(name, price, category){
 			this.name = name;
 			this.price = price;
-			this.category = category;
-
-			this.addToList = function(){
-				groceries.push(JSON.stringify(this));
-			}
 		}
 
 		// FUNCTIONS
 
-		function save_groceries() {
-			localStorage.setItem("groceries", JSON.stringify(groceries));
+		function save_categories() {
+			localStorage.setItem("categories", JSON.stringify(categories));
 		}
 
-		function get_groceries() {
-			return JSON.parse(localStorage.getItem("groceries"));
+		function get_categories() {
+			return JSON.parse(localStorage.getItem("categories"));
 		}
 
 		function clear_grocery_fields() {
@@ -179,18 +160,36 @@
 
 		// EVENTS
 
-		$("#create_new_category").tap(function () {
-			$("#category").append($("<option value='" + $("#new_category_name").val() + "'>" + $("#new_category_name").val() + "</option>"));
-			$("#new_category_name").val("");
-		});
+		// $("#create_new_category").tap(function () {
+		// 	$("#category").append($("<option value='" + $("#new_category_name").val() + "'>" + $("#new_category_name").val() + "</option>"));
+		// 	$("#new_category_name").val("");
+		// });
 
-		$("#submit_grocery").tap(function () {
+		$("#submit_grocery").tap(function (e) {
+			e.preventDefault();
 			var gname = $("#grocery_name").val();
 			var gprice = $("#grocery_price").val();
+			var g = new grocery(gname, gprice);
+
 			var gcategory = $("#grocery_category").val();
-			var g = new grocery(gname, gprice, gcategory);
-			g.addToList();
-			save_groceries();
+			var category_exists = false;
+			$.each(categories, function( index, value ) {
+			  if (value.name == gcategory) {
+			  	console.log("FOUND IT");
+			  	value.addItem(g);
+			  	category_exists = true;
+			  	return false;
+			  }
+			});
+
+			if (!category_exists) {
+				console.log("DIDNT FIND IT");
+				c = new category(gcategory);
+				c.addItem(g);
+				categories.push(c);
+			}
+
+			save_categories();
 			clear_grocery_fields();
 		});
 
