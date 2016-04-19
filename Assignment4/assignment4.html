@@ -208,7 +208,7 @@
 			$.each(categories, function( index, value ) {
 				var div_collapsible = $("<div data-role='collapsible'></div>");
 			  $(div_collapsible).append($("<h4>" + value.name + "</h4>"));
-			  var category_list = $("<ul data-role='listview' id='" + name.value + "_list'></ul>");
+			  var category_list = $("<ul data-role='listview' id='" + value.name + "_list'></ul>");
 			  $.each(value.groceries, function (i, v) {
 			  	$(category_list).append($("<li><a href='#'>"+ v.name +"</a></li>"));
 			  });
