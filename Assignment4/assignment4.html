@@ -48,7 +48,7 @@
 
 		<div data-role="page" id="list_mode" data-theme="b">
     	<div data-role="header">
-    		<button class="ui-btn" id="button_add">Add Item</button>
+    		<button class="ui-btn" id="button_show_list">Show List</button>
       	<h1>List Mode</h1>
       	<div data-role="navbar">
 		      <ul>
@@ -125,13 +125,18 @@
 			}
 		}
 
-		function grocery(name, price, category){
+		function grocery(name, price){
 			this.name = name;
 			this.price = price;
 		}
 
-		function list(name) {
+		function list() {
 			this.name = name;
+			this.groceries = new Array();
+
+			this.addItem = function(item) {
+				this.groceries.push(item);
+			}
 		}
 
 		// FUNCTIONS
@@ -179,10 +184,6 @@
 			clear_grocery_fields();
 		});
 
-		// $("li").tap(function () {
-		// 	$(this).remove();
-		// });
-
 		// $("#button_add").tap(function (){
 		// 	$("#div_add_item").show();
 		// });
@@ -201,22 +202,38 @@
 		// });
 
 
-		$(document).on("pagebeforeshow","#list_mode",function(){
+		$(document).on("pagebeforeshow", "#list_mode", function(){
+			var current_list = new list();
+
+			// remove all lists
 			var div_content = $("#list_mode").find("div[data-role='content']");
 			var all_lists = $(div_content).find("div[data-role='collapsible']");
 			$(all_lists).remove();
+
+			// create lists again from the current stored objects
 			$.each(categories, function( index, value ) {
 				var div_collapsible = $("<div data-role='collapsible'></div>");
 			  $(div_collapsible).append($("<h4>" + value.name + "</h4>"));
 			  var category_list = $("<ul data-role='listview' id='" + value.name + "_list'></ul>");
 			  $.each(value.groceries, function (i, v) {
-			  	$(category_list).append($("<li><a href='#'>"+ v.name +"</a></li>"));
+			  	$(category_list).append($("<li item-price='" + v.price + "' item-name='" + v.name + "'><a href='#'>"+ v.name +"</a></li>"));
 			  });
 
 			  $(div_collapsible).append(category_list);
 			  div_content.append(div_collapsible);
 			});
-			$(div_content).trigger('create');
+			$("#list_mode").trigger('create');
+
+			// create tap event to add item to list
+			var categories_items = $(div_content).find('li');
+			$(categories_items).tap(function () {
+				var item_name = $(this).attr('item-name');
+				var item_price = $(this).attr('item-price');
+				var item = new grocery(item_name, item_price);
+				current_list.addItem(item);
+				$(this).remove();
+			});
+
 		});
 
 
