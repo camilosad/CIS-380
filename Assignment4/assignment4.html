@@ -47,37 +47,25 @@
 		</div>
 
 		<div data-role="page" id="list_mode" data-theme="b">
-        	<div data-role="header">
-        		<button class="ui-btn" id="button_add">Add Item</button>
-            	<h1>List Mode</h1>
-            	<div data-role="navbar">
-			      <ul>
-			        <li><a href="#grocery_mode">Grocery</a></li>
-			        <li><a href="#" class="ui-btn-active ui-state-persist">Build List</a></li>
-			        <li><a href="#shopping_mode">Shopping</a></li>
-			      </ul>
-			    </div>
-	        </div>
-	        <div data-role="content">
-	        	<div id="div_add_item" style="display:none">
-					<h4>New Item</h4>
-					<input type="text" id="item_to_add">
-					<a href="" id="done">Done</a>
-	        	</div>
+    	<div data-role="header">
+    		<button class="ui-btn" id="button_add">Add Item</button>
+      	<h1>List Mode</h1>
+      	<div data-role="navbar">
+		      <ul>
+		        <li><a href="#grocery_mode">Grocery</a></li>
+		        <li><a href="#" class="ui-btn-active ui-state-persist">Build List</a></li>
+		        <li><a href="#shopping_mode">Shopping</a></li>
+		      </ul>
+		    </div>
+      </div>
 
-	        	<div data-role="collapsible">
-	        		<h4>List</h4>
-		        	<ul data-role="listview" id="list">
-		                <li><a href="#">Food</a></li>
-		                <li><a href="#">Produce</a></li>
-		                <li><a href="#">Supplies</a></li>
-	           		</ul>
-	           	</div>
-	        </div>
-	        <div data-role="footer">
-	        	<h4>&copy; 2016</h4>
-        	</div>
-        </div>
+      <div data-role="content">
+      </div>
+
+      <div data-role="footer">
+      	<h4>&copy; 2016</h4>
+    	</div>
+    </div>
 
 
         <div data-role="page" id="shopping_mode" data-theme="b">
@@ -142,6 +130,10 @@
 			this.price = price;
 		}
 
+		function list(name) {
+			this.name = name;
+		}
+
 		// FUNCTIONS
 
 		function save_categories() {
@@ -160,10 +152,6 @@
 
 		// EVENTS
 
-		// $("#create_new_category").tap(function () {
-		// 	$("#category").append($("<option value='" + $("#new_category_name").val() + "'>" + $("#new_category_name").val() + "</option>"));
-		// 	$("#new_category_name").val("");
-		// });
 
 		$("#submit_grocery").tap(function (e) {
 			e.preventDefault();
@@ -175,7 +163,6 @@
 			var category_exists = false;
 			$.each(categories, function( index, value ) {
 			  if (value.name == gcategory) {
-			  	console.log("FOUND IT");
 			  	value.addItem(g);
 			  	category_exists = true;
 			  	return false;
@@ -183,7 +170,6 @@
 			});
 
 			if (!category_exists) {
-				console.log("DIDNT FIND IT");
 				c = new category(gcategory);
 				c.addItem(g);
 				categories.push(c);
@@ -214,6 +200,24 @@
 		// 	}
 		// });
 
+
+		$(document).on("pagebeforeshow","#list_mode",function(){
+			var div_content = $("#list_mode").find("div[data-role='content']");
+			var all_lists = $(div_content).find("div[data-role='collapsible']");
+			$(all_lists).remove();
+			$.each(categories, function( index, value ) {
+				var div_collapsible = $("<div data-role='collapsible'></div>");
+			  $(div_collapsible).append($("<h4>" + value.name + "</h4>"));
+			  var category_list = $("<ul data-role='listview' id='" + name.value + "_list'></ul>");
+			  $.each(value.groceries, function (i, v) {
+			  	$(category_list).append($("<li><a href='#'>"+ v.name +"</a></li>"));
+			  });
+
+			  $(div_collapsible).append(category_list);
+			  div_content.append(div_collapsible);
+			});
+			$(div_content).trigger('create');
+		});
 
 
 	</script>
