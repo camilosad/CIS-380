@@ -256,7 +256,7 @@
 			$("#list_mode").trigger('create');
 
 			// create tap event to add item to list
-			var categories_items = $(div_content).find('li');
+			var categories_items = $(div_content).find("ul[data-role='listview']").find('li');
 			$(categories_items).tap(function () {
 				var item_name = $(this).attr('item-name');
 				var item_price = $(this).attr('item-price');
@@ -271,12 +271,15 @@
 				$("#show_list_content").append(create_list_dom(current_list.groceries));
 				// remove the old total and adds the new one
 				$("#show_list_footer").children().remove();
-				$("#show_list_footer").append($("<h1>Total: " + calculate_total(current_list.groceries) + "</h1>"));
+				$("#show_list_footer").append($("<h4>Total: " + calculate_total(current_list.groceries) + "</h4>"));
 			});
 
 			$("#save_list").tap(function () {
+				console.log(current_list);
 				current_list.name = $("#list_name").val();
+				console.log(current_list);
 				lists.push(current_list);
+				console.log(lists);
 				save_lists();
 			});
 
@@ -296,7 +299,7 @@
 		function calculate_total(list) {
 			var total = 0;
 			$.each(list, function (i, v) {
-				total += v.price;
+				total += parseInt(v.price, 10);
 			});
 			return total;
 		}
