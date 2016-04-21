@@ -97,31 +97,30 @@
 
     <div data-role="page" id="shopping_mode" data-theme="b">
     	<div data-role="header">
-        	<h1>Shopping Mode</h1>
-        	<div data-role="navbar">
-	      <ul>
-	        <li><a href="#grocery_mode">Grocery</a></li>
-	        <li><a href="#list_mode">Build List</a></li>
-	        <li><a href="#" class="ui-btn-active ui-state-persist">Shopping</a></li>
-	      </ul>
-	    </div>
-      </div>
-      <div data-role="content">
-      	<div id="div_add_item" style="display:none">
-					<h4>New Item</h4>
-					<input type="text" id="item_to_add">
-					<a href="" id="done">Done</a>
-      	</div>
+      	<h1>Shopping Mode</h1>
+      	<div data-role="navbar">
+		      <ul>
+		        <li><a href="#grocery_mode">Grocery</a></li>
+		        <li><a href="#list_mode">Build List</a></li>
+		        <li><a href="#" class="ui-btn-active ui-state-persist">Shopping</a></li>
+		      </ul>
+		    </div>
+    	</div>
 
-      	<div data-role="collapsible">
-      		<h4>List</h4>
-        	<ul data-role="listview" id="list">
-                <li><a href="#">Food</a></li>
-                <li><a href="#">Produce</a></li>
-                <li><a href="#">Supplies</a></li>
-         		</ul>
-         	</div>
-      </div>
+      <div data-role="content">
+				<fieldset class="ui-field-contain" id="fieldset_list">
+					<label for="day">Select List</label>
+					<select name="list_select" id="list_select" data-native-menu="false">
+						<option value=""></option>
+					</select>
+				</fieldset>
+
+				<ul data-role="listview" data-inset="true" id="shopping_list">
+    		</ul>
+    	</div>
+
+    </div>
+
       <div data-role="footer">
       	<h4>&copy; 2016</h4>
     	</div>
@@ -286,7 +285,7 @@
 				$("#list_name").val("");
 				$("#div_name_list").hide();
 				current_list = new list();
-				$.mobile.navigate("#shopping_mode");
+				// $.mobile.navigate("#shopping_mode");
 			});
 
 		});
@@ -309,6 +308,63 @@
 			return total;
 		}
 
+		var shopping_list_object = new list();
+
+		$(document).on("pagebeforeshow", "#shopping_mode", function(){
+				var fieldset_list = $("#fieldset_list");
+				var list_select = $("#list_select");
+				list_select.remove();
+				list_select = $("<select name='list_select' id='list_select' data-native-menu='false'>");
+				list_select.append($("<option value=''></option>"));
+
+				$.each(lists, function (index, value) {
+					if (value.name != "") {
+						var list_option = $("<option value='" + value.name + "'>" + value.name + "</option>");
+						list_select.append(list_option);
+					}
+				});
+
+				fieldset_list.append(list_select);
+
+
+				$('#list_select').on('change', function() {
+					var selected_value = this.value;
+					console.log(selected_value);
+
+					$.each(lists, function (index, value) {
+						if (value.name == selected_value) {
+							shopping_list_object.name = value.name;
+							shopping_list_object.groceries = value.groceries;
+							return false;
+						}
+					});
+
+					$("#shopping_list").remove();
+					var shopping_mode_page_content = $("#shopping_mode").find("div[data-role='content']");
+					var new_shopping_list_ul = $("<ul data-role='listview' data-inset='true' id='shopping_list'></ul>");
+
+					$.each(shopping_list_object.groceries, function (index, value) {
+						var li_grocery = $("<li item-price='" + value.price + "' item-name='" + value.name + "'><a href='#'>"+ value.name +"</a></li>");
+						new_shopping_list_ul.append(li_grocery);
+					});
+
+					shopping_mode_page_content.append(new_shopping_list_ul);
+					$("#shopping_mode").trigger('create');
+				});
+
+				// var shopping_groceries = $(shopping_mode_page_content).find("ul[data-role='listview']").find('li');
+				// $(shopping_groceries).tap(function () {
+				// 	var item_name = $(this).attr('item-name');
+				// 	var item_price = $(this).attr('item-price');
+				// 	var item = new grocery(item_name, item_price);
+				// 	current_list.addItem(item);
+				// 	$(this).remove();
+				// });
+
+
+				$("#shopping_mode").trigger('create');
+
+		});
 
 
 	</script>
