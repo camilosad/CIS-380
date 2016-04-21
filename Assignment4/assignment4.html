@@ -105,6 +105,7 @@
 		        <li><a href="#" class="ui-btn-active ui-state-persist">Shopping</a></li>
 		      </ul>
 		    </div>
+		    <h2 id="shopping_total">Total: </h2>
     	</div>
 
       <div data-role="content">
@@ -119,13 +120,11 @@
     		</ul>
     	</div>
 
-    </div>
-
-      <div data-role="footer">
+    	<div data-role="footer">
       	<h4>&copy; 2016</h4>
     	</div>
-    </div>
 
+    </div>
 
 	</body>
 
@@ -163,6 +162,22 @@
 			this.addItem = function(item) {
 				this.groceries.push(item);
 			}
+
+			this.removeItem = function(item_name) {
+				var index_to_be_removed = -1;
+
+				$.each(this.groceries, function (i, v) {
+					if (item_name == v.name) {
+						index_to_be_removed = i;
+						return false;
+					}
+				});
+
+				if (index_to_be_removed > -1) {
+					this.groceries.splice(index_to_be_removed, 1);
+				}
+			}
+
 		}
 
 		// FUNCTIONS
@@ -309,62 +324,65 @@
 		}
 
 		var shopping_list_object = new list();
+		var shopping_mode_page_content = $("#shopping_mode").find("div[data-role='content']");
 
 		$(document).on("pagebeforeshow", "#shopping_mode", function(){
-				var fieldset_list = $("#fieldset_list");
-				var list_select = $("#list_select");
-				list_select.remove();
-				list_select = $("<select name='list_select' id='list_select' data-native-menu='false'>");
-				list_select.append($("<option value=''></option>"));
+			var fieldset_list = $("#fieldset_list");
+			var list_select = $("#list_select");
+			list_select.remove();
+			list_select = $("<select name='list_select' id='list_select' data-native-menu='false'>");
+			list_select.append($("<option value=''></option>"));
+			$('#shopping_total').remove();
+
+			$.each(lists, function (index, value) {
+				if (value.name != "") {
+					var list_option = $("<option value='" + value.name + "'>" + value.name + "</option>");
+					list_select.append(list_option);
+				}
+			});
+
+			fieldset_list.append(list_select);
+			$("#shopping_mode").trigger('create');
+
+			$('#list_select').on('change', function() {
+				var selected_value = this.value;
 
 				$.each(lists, function (index, value) {
-					if (value.name != "") {
-						var list_option = $("<option value='" + value.name + "'>" + value.name + "</option>");
-						list_select.append(list_option);
+					if (value.name == selected_value) {
+						shopping_list_object.name = value.name;
+						shopping_list_object.groceries = value.groceries;
+						return false;
 					}
 				});
 
-				fieldset_list.append(list_select);
+				$("#shopping_list").remove();
+				var new_shopping_list_ul = $("<ul data-role='listview' data-inset='true' id='shopping_list'></ul>");
 
-
-				$('#list_select').on('change', function() {
-					var selected_value = this.value;
-					console.log(selected_value);
-
-					$.each(lists, function (index, value) {
-						if (value.name == selected_value) {
-							shopping_list_object.name = value.name;
-							shopping_list_object.groceries = value.groceries;
-							return false;
-						}
-					});
-
-					$("#shopping_list").remove();
-					var shopping_mode_page_content = $("#shopping_mode").find("div[data-role='content']");
-					var new_shopping_list_ul = $("<ul data-role='listview' data-inset='true' id='shopping_list'></ul>");
-
-					$.each(shopping_list_object.groceries, function (index, value) {
-						var li_grocery = $("<li item-price='" + value.price + "' item-name='" + value.name + "'><a href='#'>"+ value.name +"</a></li>");
-						new_shopping_list_ul.append(li_grocery);
-					});
-
-					shopping_mode_page_content.append(new_shopping_list_ul);
-					$("#shopping_mode").trigger('create');
+				$.each(shopping_list_object.groceries, function (index, value) {
+					var li_grocery = $("<li item-price='" + value.price + "' item-name='" + value.name + "' onclick='checkItem(this)'><a href='#'>"+ value.name +"</a></li>");
+					new_shopping_list_ul.append(li_grocery);
 				});
 
-				// var shopping_groceries = $(shopping_mode_page_content).find("ul[data-role='listview']").find('li');
-				// $(shopping_groceries).tap(function () {
-				// 	var item_name = $(this).attr('item-name');
-				// 	var item_price = $(this).attr('item-price');
-				// 	var item = new grocery(item_name, item_price);
-				// 	current_list.addItem(item);
-				// 	$(this).remove();
-				// });
-
-
+				shopping_mode_page_content.append(new_shopping_list_ul);
 				$("#shopping_mode").trigger('create');
+			});
 
 		});
+
+		var shopping_groceries = $(shopping_mode_page_content).find("ul[data-role='listview']").find('li');
+		var total = 0;
+		checkItem = function (li){
+			var item_name = $(li).attr('item-name');
+			var item_price = $(li).attr('item-price');
+			shopping_list_object.removeItem(item_name);
+			$(li).remove();
+			// $(li).addClass('ui-icon-check');
+
+			total += parseFloat(item_price);
+			$('#shopping_total').remove();
+			var shopping_header = $('#shopping_mode').find("div[data-role='header']");
+			shopping_header.append($("<h1 aria-level='1' role='heading' class='ui-title' id='shopping_total'>Total: $ " + total + "</h1>"));
+		}
 
 
 	</script>
