@@ -50,7 +50,7 @@
     	<div data-role="header">
     		<a href="#show_list" id="button_show_list" data-rel="popup" data-position-to="window" data-transition="fade" class="ui-btn ui-corner-all ui-shadow ui-btn-inline">Show List</a>
       	<h1>List Mode</h1>
-      	<a href="#name_and_save_list" id="button_done" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all">Done</a>
+      	<a href="" id="button_done" class="ui-btn ui-btn-inline ui-corner-all">Done</a>
       	<div data-role="navbar">
 		      <ul>
 		        <li><a href="#grocery_mode">Grocery</a></li>
@@ -60,25 +60,28 @@
 		    </div>
       </div>
 
+
       <div data-role="content">
 
-		    <div data-role="popup" id="name_and_save_list" class="ui-content" style="min-width:250px;">
-		      <form method="post">
-		        <div>
-		          <h3>List name</h3>
-		          <label for="list_name" class="ui-hidden-accessible">List name:</label>
-		          <input type="text" name="list_name" id="list_name">
-		          <a href="#" data-rel="back" class="ui-btn ui-corner-all" id="save_list">Save</a>
-		        </div>
-		      </form>
-		    </div>
+      	<div id="div_name_list" style="display:none">
+      		<form method="post">
+		      	<div class="ui-field-contain">
+		        	<fieldset class="ui-field-contain">
+								<label for="list_name">List name:</label>
+			        	<input type="text" name="list_name" id="list_name">
+							</fieldset>
+						</div>
+						<input type="submit" data-inline="true" id="submit_list" value="Save">
+					</form>
+      	</div>
+
 
 		    <div data-role="popup" id="show_list">
 		      <div data-role="header">
 		        <h1>List</h1>
 		      </div>
 		      <div data-role="main" class="ui-content" id="show_list_content">
-		        <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+		        <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
 		      </div>
 		      <div data-role="footer" id="show_list_footer">
 		      </div>
@@ -105,9 +108,9 @@
       </div>
       <div data-role="content">
       	<div id="div_add_item" style="display:none">
-			<h4>New Item</h4>
-			<input type="text" id="item_to_add">
-			<a href="" id="done">Done</a>
+					<h4>New Item</h4>
+					<input type="text" id="item_to_add">
+					<a href="" id="done">Done</a>
       	</div>
 
       	<div data-role="collapsible">
@@ -215,9 +218,9 @@
 			clear_grocery_fields();
 		});
 
-		// $("#button_add").tap(function (){
-		// 	$("#div_add_item").show();
-		// });
+		$("#button_done").tap(function (){
+			$("#div_name_list").show();
+		});
 
 		// $("#done").tap(function (){
 		// 	$("#div_add_item").hide();
@@ -232,9 +235,10 @@
 		// 	}
 		// });
 
-
+		var current_list = new list();
 		$(document).on("pagebeforeshow", "#list_mode", function(){
-			var current_list = new list();
+			// hide div for list name
+			$("#div_name_list").hide();
 
 			// remove all lists
 			var div_content = $("#list_mode").find("div[data-role='content']");
@@ -274,15 +278,16 @@
 				$("#show_list_footer").append($("<h4>Total: " + calculate_total(current_list.groceries) + "</h4>"));
 			});
 
-			$("#save_list").tap(function () {
-				console.log(current_list);
+			$("#submit_list").tap(function (e) {
+				e.preventDefault();
 				current_list.name = $("#list_name").val();
-				console.log(current_list);
 				lists.push(current_list);
-				console.log(lists);
 				save_lists();
+				$("#list_name").val("");
+				$("#div_name_list").hide();
+				current_list = new list();
+				$.mobile.navigate("#shopping_mode");
 			});
-
 
 		});
 
