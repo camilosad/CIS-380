@@ -8,7 +8,7 @@
 	</head>
 	<body>
 
-		<div data-role="page" id="grocery_mode" data-theme="b">
+		<div data-role="page" id="grocery_mode">
 		  <div data-role="header">
 		    <h1>Grocery Mode</h1>
 		    <div data-role="navbar">
@@ -46,7 +46,7 @@
 		  </div>
 		</div>
 
-		<div data-role="page" id="list_mode" data-theme="b">
+		<div data-role="page" id="list_mode">
     	<div data-role="header">
     		<a href="#show_list" id="button_show_list" data-rel="popup" data-position-to="window" data-transition="fade" class="ui-btn ui-corner-all ui-shadow ui-btn-inline">Show List</a>
       	<h1>List Mode</h1>
@@ -95,10 +95,10 @@
     </div>
 
 
-    <div data-role="page" id="shopping_mode" data-theme="b">
+    <div data-role="page" id="shopping_mode">
     	<div data-role="header" id="shopping_header">
       	<h1>Shopping Mode</h1>
-      	<a href="#shopping_popup_done" id="shopping_button_done" data-rel="popup" data-position-to="window" data-transition="fade" class="ui-btn ui-corner-all ui-shadow ui-btn-inline">Done</a>
+      	<a href="#shopping_popup_done" id="shopping_button_done" class="ui-btn ui-corner-all ui-shadow ui-btn-inline">Done</a>
       	<div data-role="navbar">
 		      <ul>
 		        <li><a href="#grocery_mode">Grocery</a></li>
@@ -121,7 +121,7 @@
     		</ul>
     	</div>
 
-    	<div data-role="popup" id="shopping_popup_done">
+    	<!-- <div data-role="popup" id="shopping_popup_done">
 	      <div data-role="header">
 	        <h1 id="popup_shopping_total">Total:</h1>
 	      </div>
@@ -131,16 +131,52 @@
 	      </div>
 
 	      <div data-role="footer">
-	        <!-- <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b ui-icon-back ui-btn-icon-left" data-rel="back">Go Back</a> -->
-	      </div>
-	    </div>
+	        <a href="#form_for_missed_items_list" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all">Save as new list</a>
 
+			    <div data-role="popup" id="form_for_missed_items_list" class="ui-content" style="min-width:250px;">
+			      <form>
+			        <div>
+			          <label for="missed_items_list_name" class="ui-hidden-accessible">Name:</label>
+			          <input type="text" name="user" id="missed_items_list_name">
+			          <input type="submit" data-inline="true" value="Save">
+			        </div>
+			      </form>
+			    </div>
+	      </div>
+
+	    </div>
+ -->
 
     	<div data-role="footer">
       	<h4>&copy; 2016</h4>
     	</div>
 
     </div>
+
+    <div data-role="page" data-dialog="true" id="shopping_popup_done">
+		  <div data-role="header">
+        <h1 id="popup_shopping_total">Total:</h1>
+      </div>
+
+		  <div data-role="main" class="ui-content" id="popup_missed_items_content">
+		    <h2>Items you missed</h2>
+		  </div>
+
+		  <div data-role="footer">
+		    <a href="#form_for_missed_items_list" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all">Save as new list</a>
+
+			    <div data-role="popup" id="form_for_missed_items_list" class="ui-content" style="min-width:250px;">
+			      <form>
+			        <div>
+			          <label for="missed_items_list_name" class="ui-hidden-accessible">Name:</label>
+			          <input type="text" name="user" id="missed_items_list_name" placeholder="List name">
+			          <input type="submit" id="button_save_as_new_list" data-inline="true" value="Save">
+			        </div>
+			      </form>
+			    </div>
+	      </div>
+		  </div>
+		</div>
 
 	</body>
 
@@ -343,12 +379,14 @@
 		var shopping_mode_page_content = $("#shopping_mode").find("div[data-role='content']");
 
 		$(document).on("pagebeforeshow", "#shopping_mode", function(){
+			lists = get_lists();
 			var fieldset_list = $("#fieldset_list");
 			var list_select = $("#list_select");
 			list_select.remove();
 			list_select = $("<select name='list_select' id='list_select' data-native-menu='false'>");
 			list_select.append($("<option value=''></option>"));
 			$('#shopping_total').remove();
+			$('#shopping_list').remove();
 
 			$.each(lists, function (index, value) {
 				if (value.name != "") {
@@ -406,6 +444,16 @@
 			shopping_popup_header.append($("<h1 aria-level='1' role='heading' class='ui-title' id='popup_shopping_total'>Total: $ " + total + "</h1>"));
 			$("#popup_missed_items_content").children().slice(1).remove();
 			$("#popup_missed_items_content").append(create_list_dom(shopping_list_object.groceries));
+			lists = get_lists();
+		});
+
+		$("#button_save_as_new_list").tap(function (e) {
+			// e.preventDefault();
+			var missed_items_list_name = $("#missed_items_list_name").val();
+			shopping_list_object.name = missed_items_list_name;
+			lists.push(shopping_list_object);
+			save_lists();
+			total = 0;
 		});
 
 
