@@ -96,8 +96,9 @@
 
 
     <div data-role="page" id="shopping_mode" data-theme="b">
-    	<div data-role="header">
+    	<div data-role="header" id="shopping_header">
       	<h1>Shopping Mode</h1>
+      	<a href="#shopping_popup_done" id="shopping_button_done" data-rel="popup" data-position-to="window" data-transition="fade" class="ui-btn ui-corner-all ui-shadow ui-btn-inline">Done</a>
       	<div data-role="navbar">
 		      <ul>
 		        <li><a href="#grocery_mode">Grocery</a></li>
@@ -119,6 +120,21 @@
 				<ul data-role="listview" data-inset="true" id="shopping_list">
     		</ul>
     	</div>
+
+    	<div data-role="popup" id="shopping_popup_done">
+	      <div data-role="header">
+	        <h1 id="popup_shopping_total">Total:</h1>
+	      </div>
+
+	      <div data-role="main" class="ui-content" id="popup_missed_items_content">
+	        <h2>Items you missed</h2>
+	      </div>
+
+	      <div data-role="footer">
+	        <!-- <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b ui-icon-back ui-btn-icon-left" data-rel="back">Go Back</a> -->
+	      </div>
+	    </div>
+
 
     	<div data-role="footer">
       	<h4>&copy; 2016</h4>
@@ -318,7 +334,7 @@
 		function calculate_total(list) {
 			var total = 0;
 			$.each(list, function (i, v) {
-				total += parseInt(v.price, 10);
+				total += parseFloat(v.price, 10);
 			});
 			return total;
 		}
@@ -380,9 +396,18 @@
 
 			total += parseFloat(item_price);
 			$('#shopping_total').remove();
-			var shopping_header = $('#shopping_mode').find("div[data-role='header']");
+			var shopping_header = $('#shopping_header');
 			shopping_header.append($("<h1 aria-level='1' role='heading' class='ui-title' id='shopping_total'>Total: $ " + total + "</h1>"));
 		}
+
+		$("#shopping_button_done").tap(function() {
+			$("#popup_shopping_total").remove();
+			var shopping_popup_header = $('#shopping_popup_done').find("div[data-role='header']");
+			shopping_popup_header.append($("<h1 aria-level='1' role='heading' class='ui-title' id='popup_shopping_total'>Total: $ " + total + "</h1>"));
+			$("#popup_missed_items_content").children().slice(1).remove();
+			$("#popup_missed_items_content").append(create_list_dom(shopping_list_object.groceries));
+		});
+
 
 
 	</script>
