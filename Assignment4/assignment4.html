@@ -256,32 +256,48 @@
 			$("#grocery_category").val("");
 		}
 
+		function check_price(price){
+		  if(price.match(/^-?[0-9]*[.][0-9]+$/)){
+				return true;
+		  }
+		  else{
+				return false;
+		  }
+		}
+
 		// EVENTS
 
 		$("#submit_grocery").tap(function (e) {
 			e.preventDefault();
 			var gname = $("#grocery_name").val();
 			var gprice = $("#grocery_price").val();
-			var g = new grocery(gname, gprice);
 
-			var gcategory = $("#grocery_category").val();
-			var category_exists = false;
-			$.each(categories, function( index, value ) {
-			  if (value.name == gcategory) {
-			  	value.addItem(g);
-			  	category_exists = true;
-			  	return false;
-			  }
-			});
+			if (check_price(gprice)) {
+				var g = new grocery(gname, gprice);
 
-			if (!category_exists) {
-				c = new category(gcategory);
-				c.addItem(g);
-				categories.push(c);
+				var gcategory = $("#grocery_category").val();
+				var category_exists = false;
+				$.each(categories, function( index, value ) {
+				  if (value.name == gcategory) {
+				  	value.addItem(g);
+				  	category_exists = true;
+				  	return false;
+				  }
+				});
+
+				if (!category_exists) {
+					c = new category(gcategory);
+					c.addItem(g);
+					categories.push(c);
+				}
+
+				save_categories();
+				clear_grocery_fields();
 			}
-
-			save_categories();
-			clear_grocery_fields();
+			else{
+				alert("Only decimal values are accepted for price! (1.99)");
+				$("#grocery_price").val("");
+			}
 		});
 
 		$("#button_done").tap(function (){
@@ -377,6 +393,7 @@
 
 		var shopping_list_object = new list();
 		var shopping_mode_page_content = $("#shopping_mode").find("div[data-role='content']");
+		var shopping_total = 0;
 
 		$(document).on("pagebeforeshow", "#shopping_mode", function(){
 			lists = get_lists();
@@ -400,7 +417,7 @@
 
 			$('#list_select').on('change', function() {
 				var selected_value = this.value;
-
+				shopping_total = 0;
 				$.each(lists, function (index, value) {
 					if (value.name == selected_value) {
 						shopping_list_object.name = value.name;
@@ -424,7 +441,6 @@
 		});
 
 		var shopping_groceries = $(shopping_mode_page_content).find("ul[data-role='listview']").find('li');
-		var total = 0;
 		checkItem = function (li){
 			var item_name = $(li).attr('item-name');
 			var item_price = $(li).attr('item-price');
@@ -432,18 +448,19 @@
 			$(li).remove();
 			// $(li).addClass('ui-icon-check');
 
-			total += parseFloat(item_price);
+			shopping_total += parseFloat(item_price);
 			$('#shopping_total').remove();
 			var shopping_header = $('#shopping_header');
-			shopping_header.append($("<h1 aria-level='1' role='heading' class='ui-title' id='shopping_total'>Total: $ " + total + "</h1>"));
+			shopping_header.append($("<h1 aria-level='1' role='heading' class='ui-title' id='shopping_total'>Total: $ " + shopping_total + "</h1>"));
 		}
 
 		$("#shopping_button_done").tap(function() {
 			$("#popup_shopping_total").remove();
 			var shopping_popup_header = $('#shopping_popup_done').find("div[data-role='header']");
-			shopping_popup_header.append($("<h1 aria-level='1' role='heading' class='ui-title' id='popup_shopping_total'>Total: $ " + total + "</h1>"));
+			shopping_popup_header.append($("<h1 aria-level='1' role='heading' class='ui-title' id='popup_shopping_total'>Total: $ " + shopping_total + "</h1>"));
 			$("#popup_missed_items_content").children().slice(1).remove();
 			$("#popup_missed_items_content").append(create_list_dom(shopping_list_object.groceries));
+			shopping_total = 0;
 			lists = get_lists();
 		});
 
@@ -453,7 +470,6 @@
 			shopping_list_object.name = missed_items_list_name;
 			lists.push(shopping_list_object);
 			save_lists();
-			total = 0;
 		});
 
 
