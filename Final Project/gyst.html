@@ -83,7 +83,7 @@
               <label for="task_reminder">Set reminder?</label>
               <input type="checkbox" name="reminder" id="task_reminder" value="1" data-mini="true">
               
-              <input type="submit" data-inline="true" id="submit_task_form" data-rel="back" value="Create">
+              <input type="submit" data-inline="true" id="submit_task_form" value="Create">
             </div>
           </form>
         </div>
@@ -95,26 +95,10 @@
 		  </div>
     
     </div>
-    
-    <!--page for-->
 
   </body>
 
   <script language=javascript type="text/javascript">
-
-    // angular
-    var app = angular.module('gyst', []);
-    app.controller('tasksCtrl', function($scope) {
-        $scope.tasks = get_tasks();
-
-        $scope.addTask = function() {
-          t = new task($scope.ng_task_description, $scope.ng_task_due_date, $scope.ng_task_hours_needed, $scope.ng_task_status);
-          console.log(t);
-          $scope.tasks.push(JSON.stringify(t));
-          // $scope.todoInput = "";
-        };
-    });
-
     // lists
     var categories = new Array();
     var tasks = new Array();
@@ -194,38 +178,48 @@
     save_tasks();
     
     
+    // angular
+    var app = angular.module('gyst', []);
+    app.controller('tasksCtrl', function($scope) {
+        $scope.tasks = get_tasks();
+
+        // create the new category and task
+        $scope.addTask = function() {
+          var new_task_description = $scope.ng_task_description;
+          new_task_due_date = $scope.ng_task_due_date;
+          new_task_hours_needed = $scope.ng_task_hours_needed;
+          new_task_status = $scope.ng_task_status;
+          
+          new_task = new task(new_task_description, new_task_due_date, new_task_hours_needed, new_task_status);
+          new_task.addToList();
+          save_tasks();
+          
+          var category_name = $scope.ng_task_category;
+          var category_index = check_category(category_name);
+
+          // if category exists, get the category object from the categories array. If not, create a new one
+          if (category_index > -1){
+            var task_category = categories[category_index];
+            task_category.addTask(new_task);
+          }
+          else{
+            var task_category = new category(category_name);
+            task_category.addTask(new_task);
+            task_category.addToList();
+          }
+
+          save_categories();
+          
+          // update the variable used in the tasks table
+          $scope.tasks = get_tasks();
+        };
+    });
+    
+    
     // events
-    
-    // creating new task
 		$("#submit_task_form").tap(function (e) {
-      // e.preventDefault();
-			var task_description = $("#task_description").val();
-      var task_hours_needed = $("#task_hours_needed").val();
-      var task_due_date = $("#task_due_date").val();
-      var task_status = $("input:radio[name ='task_status']:checked").val();
-      
-      // create task object, add to tasks list and save it
-      var new_task = new task(task_description, task_due_date, task_hours_needed, task_status);
-      new_task.addToList();
-      save_tasks();
-      
-      var category_name = $("#task_category").val();
-      var category_index = check_category(category_name);
-      
-      // if category exists, get the category object from the categories array. If not, create a new one
-      if (category_index > -1){
-        var task_category = categories[category_index];
-        task_category.addTask(new_task);
-      }
-      else{
-        var task_category = new category(category_name);
-        task_category.addTask(new_task);
-        task_category.addToList();
-      }
-    
-      save_categories();
       clear_task_form();
-      // $.mobile.back();
+      $.mobile.back();
 		});
     
 		$("#close_task_form").tap(function (e) {
