@@ -44,7 +44,7 @@
             <tbody>
               <tr ng-repeat="x in tasks">
                 <td>{{ x.description }}</td>
-                <td>{{ x.status }}</td>
+                <td>{{ getStatus(x.status) }}</td>
               </tr>
             </tbody>
           </table>
@@ -91,7 +91,7 @@
       </div>
       
 		  <div data-role="footer">
-		    <h4>&copy; 2016</h4>
+		    <h4>&copy; All rights reserved - GYST - 2016</h4>
 		  </div>
     
     </div>  
@@ -126,7 +126,6 @@
       this.addToList = function(){
         tasks.push(this);
       }
-      
     }
 
     // FUNCTIONS 
@@ -181,6 +180,18 @@
     var app = angular.module('gyst', []);
     app.controller('tasksCtrl', function($scope) {
         $scope.tasks = get_tasks();
+        
+        // return formated status
+        $scope.getStatus = function(str) {
+          if (str == "not_started")
+            return "Not started";
+          else if (str == "in_progress")
+            return "In progress";
+          else if (str == "done")
+            return "Done";
+          else
+            return "";
+        };
 
         // create the new category and task
         $scope.addTask = function() {
