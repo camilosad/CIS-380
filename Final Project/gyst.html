@@ -23,9 +23,9 @@
     <title> GYST </title>
   </head>
 
-  <body>
+  <body ng-app="gyst">
     <!--MAIN PAGE WITH LIST OF TASKS-->
-    <div data-role="page" id="main" ng-app="gyst" ng-controller="tasksCtrl">
+    <div data-role="page" id="todays_tasks" ng-controller="tasksCtrl">
 
       <div data-role="header">
         <h1>Todays tasks</h1>
@@ -37,13 +37,15 @@
           <table data-role="table" class="ui-responsive table" id="table_tasks">
             <thead>
               <tr>
+                <th class="ui-hidden-accessible">#</th>
                 <th>Task</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
               <tr ng-repeat="x in tasks">
-                <td>{{ x.description }}</td>
+                <td class="ui-hidden-accessible">{{ x.id }}</td>
+                <td><a href="#task_details" data-rel="popup">{{ x.description }}</a></td>
                 <td>{{ getStatus(x.status) }}</td>
               </tr>
             </tbody>
@@ -90,12 +92,29 @@
         
       </div>
       
+      
+      <!-- TASK DETAILS POPUP -->
+      <div data-role="popup" class="ui-content" style="min-width:250px;" id="task_details" ng-controller="tasksCtrl">
+        <div data-role="header">
+          <h1></h1>
+        </div>
+
+        <div data-role="main" class="ui-content">
+          <a href="#todays_tasks">Go to Page One</a>
+        </div>
+
+        <div data-role="footer">
+          <!-- <h1> mark task as done button</h1> -->
+        </div>
+      </div>
+      
+      
 		  <div data-role="footer">
 		    <h4>&copy; All rights reserved - GYST - 2016</h4>
 		  </div>
+      
+    </div>
     
-    </div>  
-
   </body>
 
   <script language=javascript type="text/javascript">
@@ -118,6 +137,7 @@
     }
 
     function task(description, due_date, hours, status){
+      this.id = tasks.length + 1;
       this.description = description;
       this.due_date = new Date(due_date);
       this.hours = hours;
@@ -156,6 +176,15 @@
 			  }
 			});
       return category_index;
+    }
+    
+    // GIVEN AN ID, FIND THE TASK IN TASKS LIST 
+    function find_task(task_id){
+			$.each(tasks, function( index, value ) {
+			  if (value.id == task_id) {
+			  	return value;
+			  }
+			});
     }
     
     // CLEAR TASK FORM FIELDS
@@ -223,18 +252,28 @@
           // update the variable used by angular to generate the tasks table
           $scope.tasks = get_tasks();
         };
+        
     });
     
     
     // MOBILE EVENTS
+    // clear form fields and go back when submit
 		$("#submit_task_form").tap(function (e) {
       clear_task_form();
       $.mobile.back();
 		});
     
+    // clear form fields when close
 		$("#close_task_form").tap(function (e) {
 			clear_task_form();
 		});
+    
+    // show dialog with task details 
+      //     $("tbody > tr").tap(function(e){
+      // e.preventDefault();
+      //       var td_id = $(this).find("#task_id").text();
+      //       console.log(td_id);
+      //     });
 
   </script>
 </html>
