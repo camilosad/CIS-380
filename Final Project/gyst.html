@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+  
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <title> GYST </title>
+  </head>
+
+  <body>
+
+    <div data-role="page" id="main" ng-app="gyst">
+    
+      <div data-role="header">
+        <h1>Todays tasks</h1>
+      </div>
+      
+      <div data-role="content" class="ui-content">
+        <div ng-controller="tasksCtrl">
+          <table data-role="table" class="ui-responsive">
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="x in tasks">
+                <td>{{ x.description }}</td>
+                <td>{{ x.status }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    
+    </div>
+
+  </body>
+
+  <script>
+
+    // angular
+    var app = angular.module('gyst', []);
+    app.controller('tasksCtrl', function($scope) {
+        $scope.tasks =  get_tasks();
+
+        // $scope.fullName = function() {
+        //     return $scope.firstName + " " + $scope.lastName;
+        // };
+    });
+
+    // lists
+    var categories = new Array();
+    var tasks = new Array();
+
+    // objects
+
+    function category(name){
+      this.name = name;
+      this.tasks = new Array();
+
+      this.addToList = function(){
+        categories.push(this);
+      }
+
+      this.addTask = function(task) {
+        this.tasks.push(task);
+      }
+    }
+
+    function task(description, due_date, hours, status){
+      this.description = description;
+      this.due_date = due_date;
+      this.hours = hours;
+      this.status = status;
+
+      this.addToList = function(){
+        tasks.push(this);
+      }
+    }
+
+    // functions 
+
+    function save_categories() {
+      localStorage.setItem("categories", JSON.stringify(categories));
+    }
+
+    function get_categories() {
+      return JSON.parse(localStorage.getItem("categories"));
+    }
+    
+    function save_tasks() {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function get_tasks() {
+      return JSON.parse(localStorage.getItem("tasks"));
+    }
+
+
+    // test tasks
+    for (var i = 0; i < 5; i++) {
+      var t = new task("task" + i, Date(), i, "Not started");
+      t.addToList(); 
+    };
+
+    save_tasks();
+
+  </script>
+</html>
