@@ -11,12 +11,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script>
       $(function() {
-        $( "#task_due_date" ).datepicker();
+        $( "#task_due_date" ).datepicker({
+          dateFormat: "yy-mm-dd"
+        });
       });
     </script>
     <title> GYST </title>
@@ -24,7 +25,7 @@
 
   <body>
     <!--main page with list of tasks-->
-    <div data-role="page" id="main" ng-app="gyst">
+    <div data-role="page" id="main" ng-app="gyst" ng-controller="tasksCtrl">
 
       <div data-role="header">
         <h1>Todays tasks</h1>
@@ -32,7 +33,7 @@
       </div>
       
       <div data-role="content" class="ui-content">
-        <div ng-controller="tasksCtrl">
+        <div>
           <table data-role="table" class="ui-responsive table" id="table_tasks">
             <thead>
               <tr>
@@ -52,32 +53,37 @@
         
         <div data-role="popup" id="task_form" class="ui-content" style="min-width:250px;">
           <div data-role="header">
+            <a href="#" data-rel="back" id="close_task_form" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
             <h3>New task</h3>
           </div>
-          <form method="post">
+          <form ng-submit="addTask()">
             <div>
               <label for="task_description" class="ui-hidden-accessible">Description:</label>
-              <input type="text" name="description" id="task_description" placeholder="Description">
-              <label for="task_category" class="ui-hidden-accessible">Category:</label>
-              <input type="text" name="category" id="task_category" placeholder="Category">
-              <label for="task_hours_needed" class="ui-hidden-accessible">Hours needed:</label>
-              <input type="text" name="hours_needed" id="task_hours_needed" placeholder="Hours needed">
-              <label for="task_status" class="ui-hidden-accessible">Status:</label>
-  
-              <label for="task_due_date" class="ui-hidden-accessible">Due:</label>
-              <input type="text" name="due_date" id="task_due_date" data-role="date" placeholder="mm/dd/yyyy">
+              <input type="text" name="description" id="task_description" ng-model="ng_task_description" placeholder="Description">
               
+              <label for="task_category" class="ui-hidden-accessible">Category:</label>
+              <input type="text" name="category" id="task_category" ng-model="ng_task_category" placeholder="Category">
+              
+              <label for="task_hours_needed" class="ui-hidden-accessible">Hours needed:</label>
+              <input type="text" name="hours_needed" id="task_hours_needed" ng-model="ng_task_hours_needed" placeholder="Hours needed">
+              
+              <label for="task_due_date" class="ui-hidden-accessible">Due:</label>
+              <input type="text" name="due_date" id="task_due_date" data-role="date" ng-model="ng_task_due_date" placeholder="yyyy-mm-dd">
+              
+              <label for="task_status" class="ui-hidden-accessible">Status:</label>
               <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
                 <label for="task_status_not_started">Not started</label>
-                <input type="radio" name="task_status" id="task_status_not_started" value="not_started">
+                <input type="radio" name="task_status" id="task_status_not_started" ng-model="ng_task_status" value="not_started">
                 <label for="task_status_in_progress">In progress</label>
-                <input type="radio" name="task_status" id="task_status_in_progress" value="in_progress">	
+                <input type="radio" name="task_status" id="task_status_in_progress" ng-model="ng_task_status" value="in_progress">	
                 <label for="task_status_done">Done</label>
-                <input type="radio" name="task_status" id="task_status_done" value="done">
+                <input type="radio" name="task_status" id="task_status_done" ng-model="ng_task_status" value="done">
               </fieldset>
+              
               <label for="task_reminder">Set reminder?</label>
               <input type="checkbox" name="reminder" id="task_reminder" value="1" data-mini="true">
-              <input type="submit" data-inline="true" value="Create">
+              
+              <input type="submit" data-inline="true" id="submit_task_form" data-rel="back" value="Create">
             </div>
           </form>
         </div>
@@ -94,16 +100,19 @@
 
   </body>
 
-  <script>
+  <script language=javascript type="text/javascript">
 
     // angular
     var app = angular.module('gyst', []);
     app.controller('tasksCtrl', function($scope) {
-        $scope.tasks =  get_tasks();
+        $scope.tasks = get_tasks();
 
-        // $scope.fullName = function() {
-        //     return $scope.firstName + " " + $scope.lastName;
-        // };
+        $scope.addTask = function() {
+          t = new task($scope.ng_task_description, $scope.ng_task_due_date, $scope.ng_task_hours_needed, $scope.ng_task_status);
+          console.log(t);
+          $scope.tasks.push(JSON.stringify(t));
+          // $scope.todoInput = "";
+        };
     });
 
     // lists
@@ -127,17 +136,18 @@
 
     function task(description, due_date, hours, status){
       this.description = description;
-      this.due_date = due_date;
+      this.due_date = new Date(due_date);
       this.hours = hours;
       this.status = status;
 
       this.addToList = function(){
         tasks.push(this);
       }
+      
     }
 
     // functions 
-
+    // local storage handlers
     function save_categories() {
       localStorage.setItem("categories", JSON.stringify(categories));
     }
@@ -153,15 +163,74 @@
     function get_tasks() {
       return JSON.parse(localStorage.getItem("tasks"));
     }
-
+    
+    // return category index if exists, or -1 if not
+    function check_category(name){
+			var category_index = -1;
+			$.each(categories, function( index, value ) {
+			  if (value.name == name) {
+			  	category_index = index;
+          return category_index;
+			  }
+			});
+      return category_index;
+    }
+    
+    // clear task form fields
+		function clear_task_form() {
+			$("#task_description").val("");
+			$("#task_category").val("");
+			$("#task_hours_needed").val("");
+      $("#task_due_date").val("");
+      // $("input:radio[name ='task_status']").prop('checked', false);
+		}
 
     // testing purpose tasks
     for (var i = 0; i < 5; i++) {
-      var t = new task("task" + i, Date(), i, "Not started");
+      var t = new task("task" + i, Date(), i, "not_started");
       t.addToList(); 
     };
-
+    
     save_tasks();
+    
+    
+    // events
+    
+    // creating new task
+		$("#submit_task_form").tap(function (e) {
+      // e.preventDefault();
+			var task_description = $("#task_description").val();
+      var task_hours_needed = $("#task_hours_needed").val();
+      var task_due_date = $("#task_due_date").val();
+      var task_status = $("input:radio[name ='task_status']:checked").val();
+      
+      // create task object, add to tasks list and save it
+      var new_task = new task(task_description, task_due_date, task_hours_needed, task_status);
+      new_task.addToList();
+      save_tasks();
+      
+      var category_name = $("#task_category").val();
+      var category_index = check_category(category_name);
+      
+      // if category exists, get the category object from the categories array. If not, create a new one
+      if (category_index > -1){
+        var task_category = categories[category_index];
+        task_category.addTask(new_task);
+      }
+      else{
+        var task_category = new category(category_name);
+        task_category.addTask(new_task);
+        task_category.addToList();
+      }
+    
+      save_categories();
+      clear_task_form();
+      // $.mobile.back();
+		});
+    
+		$("#close_task_form").tap(function (e) {
+			clear_task_form();
+		});
 
   </script>
 </html>
