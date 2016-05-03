@@ -1,26 +1,31 @@
+<!--Camilo M., File 1/1, 05/02/2016, mellensadnetoc@jay.washjeff.edu-->
 <!doctype html>
-<html>
+<html lang="en">
   
   <head>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <title> GYST </title>
   </head>
 
   <body>
-
+    <!--main page with list of tasks-->
     <div data-role="page" id="main" ng-app="gyst">
-    
+
       <div data-role="header">
         <h1>Todays tasks</h1>
+        <a href="#task_form" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all">New task</a>
       </div>
       
       <div data-role="content" class="ui-content">
         <div ng-controller="tasksCtrl">
-          <table data-role="table" class="ui-responsive">
+          <table data-role="table" class="ui-responsive table" id="table_tasks">
             <thead>
               <tr>
                 <th>Task</th>
@@ -35,9 +40,52 @@
             </tbody>
           </table>
         </div>
+        
+        
+        <div data-role="popup" id="task_form" class="ui-content" style="min-width:250px;">
+          <div data-role="header">
+            <h3>New task</h3>
+          </div>
+          <form method="post">
+            <div>
+              <label for="task_description" class="ui-hidden-accessible">Description:</label>
+              <input type="text" name="description" id="task_description" placeholder="Description">
+              <label for="task_category" class="ui-hidden-accessible">Category:</label>
+              <input type="text" name="category" id="task_category" placeholder="Category">
+              <label for="task_hours_needed" class="ui-hidden-accessible">Hours needed:</label>
+              <input type="text" name="hours_needed" id="task_hours_needed" placeholder="Hours needed">
+              <label for="task_status" class="ui-hidden-accessible">Status:</label>
+              <!-- <select name="status" id="task_status">
+                <option value="not_started" selected>Not started</option>
+                <option value="in_progress">In progress</option>
+                <option value="done">Done</option>
+              </select> -->
+              <label for="task_due_date" class="ui-hidden-accessible">Due:</label>
+              <input type="text" name="due_date" id="task_due_date" placeholder="mm/dd/yyyy">
+              <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                <label for="task_status_not_started">Not started</label>
+                <input type="radio" name="task_status" id="task_status_not_started" value="not_started">
+                <label for="task_status_in_progress">In progress</label>
+                <input type="radio" name="task_status" id="task_status_in_progress" value="in_progress">	
+                <label for="task_status_done">Done</label>
+                <input type="radio" name="task_status" id="task_status_done" value="done">
+              </fieldset>
+              <label for="task_reminder">Set reminder?</label>
+              <input type="checkbox" name="reminder" id="task_reminder" value="1" data-mini="true">
+              <input type="submit" data-inline="true" value="Create">
+            </div>
+          </form>
+        </div>
+        
       </div>
+      
+		  <div data-role="footer">
+		    <h4>&copy; 2016</h4>
+		  </div>
     
     </div>
+    
+    <!--page for-->
 
   </body>
 
@@ -102,7 +150,7 @@
     }
 
 
-    // test tasks
+    // testing purpose tasks
     for (var i = 0; i < 5; i++) {
       var t = new task("task" + i, Date(), i, "Not started");
       t.addToList(); 
