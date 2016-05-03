@@ -7,10 +7,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script>
+      $(function() {
+        $( "#task_due_date" ).datepicker();
+      });
+    </script>
     <title> GYST </title>
   </head>
 
@@ -55,13 +63,10 @@
               <label for="task_hours_needed" class="ui-hidden-accessible">Hours needed:</label>
               <input type="text" name="hours_needed" id="task_hours_needed" placeholder="Hours needed">
               <label for="task_status" class="ui-hidden-accessible">Status:</label>
-              <!-- <select name="status" id="task_status">
-                <option value="not_started" selected>Not started</option>
-                <option value="in_progress">In progress</option>
-                <option value="done">Done</option>
-              </select> -->
+  
               <label for="task_due_date" class="ui-hidden-accessible">Due:</label>
-              <input type="text" name="due_date" id="task_due_date" placeholder="mm/dd/yyyy">
+              <input type="text" name="due_date" id="task_due_date" data-role="date" placeholder="mm/dd/yyyy">
+              
               <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
                 <label for="task_status_not_started">Not started</label>
                 <input type="radio" name="task_status" id="task_status_not_started" value="not_started">
