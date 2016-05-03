@@ -24,7 +24,7 @@
   </head>
 
   <body>
-    <!--main page with list of tasks-->
+    <!--MAIN PAGE WITH LIST OF TASKS-->
     <div data-role="page" id="main" ng-app="gyst" ng-controller="tasksCtrl">
 
       <div data-role="header">
@@ -50,7 +50,7 @@
           </table>
         </div>
         
-        
+        <!-- FORM FOR CREATING NEW TASK -->
         <div data-role="popup" id="task_form" class="ui-content" style="min-width:250px;">
           <div data-role="header">
             <a href="#" data-rel="back" id="close_task_form" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
@@ -94,17 +94,16 @@
 		    <h4>&copy; 2016</h4>
 		  </div>
     
-    </div>
+    </div>  
 
   </body>
 
   <script language=javascript type="text/javascript">
-    // lists
+    // LISTS FOR STORING OBJECTS
     var categories = new Array();
     var tasks = new Array();
 
-    // objects
-
+    // OBJECTS
     function category(name){
       this.name = name;
       this.tasks = new Array();
@@ -130,8 +129,8 @@
       
     }
 
-    // functions 
-    // local storage handlers
+    // FUNCTIONS 
+    // LOCAL STORAGE HANDLERS
     function save_categories() {
       localStorage.setItem("categories", JSON.stringify(categories));
     }
@@ -148,7 +147,7 @@
       return JSON.parse(localStorage.getItem("tasks"));
     }
     
-    // return category index if exists, or -1 if not
+    // RETURN CATEGORY INDEX IF EXISTS, OTHERWISE RETURNS -1
     function check_category(name){
 			var category_index = -1;
 			$.each(categories, function( index, value ) {
@@ -160,7 +159,7 @@
       return category_index;
     }
     
-    // clear task form fields
+    // CLEAR TASK FORM FIELDS
 		function clear_task_form() {
 			$("#task_description").val("");
 			$("#task_category").val("");
@@ -169,16 +168,16 @@
       // $("input:radio[name ='task_status']").prop('checked', false);
 		}
 
-    // testing purpose tasks
-    for (var i = 0; i < 5; i++) {
-      var t = new task("task" + i, Date(), i, "not_started");
-      t.addToList(); 
-    };
+    // TESTING PURPOSE DATA (TASKS)
+    // for (var i = 0; i < 5; i++) {
+    //   var t = new task("task" + i, Date(), i, "not_started");
+    //   t.addToList();
+    // };
+    //
+    // save_tasks();
     
-    save_tasks();
     
-    
-    // angular
+    // ANGULAR
     var app = angular.module('gyst', []);
     app.controller('tasksCtrl', function($scope) {
         $scope.tasks = get_tasks();
@@ -210,13 +209,13 @@
 
           save_categories();
           
-          // update the variable used in the tasks table
+          // update the variable used by angular to generate the tasks table
           $scope.tasks = get_tasks();
         };
     });
     
     
-    // events
+    // MOBILE EVENTS
 		$("#submit_task_form").tap(function (e) {
       clear_task_form();
       $.mobile.back();
